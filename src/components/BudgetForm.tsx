@@ -1,4 +1,4 @@
-import { useState,ChangeEvent } from "react"
+import { useState,ChangeEvent, useMemo } from "react"
 
 const BudgetForm = () => {
 const [budget, setBudget]= useState(0);
@@ -6,6 +6,9 @@ const handleChange=(e:ChangeEvent<HTMLInputElement>)=>{
     setBudget(e.target.valueAsNumber)
 }
 
+const isValid = useMemo(()=>{
+    return isNaN(budget) || budget <=0;
+},[budget])
   return (
     <form className="space-y-5">
         <div className=" flex flex-col space-y-5">
@@ -14,7 +17,7 @@ const handleChange=(e:ChangeEvent<HTMLInputElement>)=>{
             </label>
             <input
                 id="budget"
-                className='w-full bg-white border border-gray-200 p-2'
+                className='w-full bg-white border border-gray-200 p-2 text-white font-black uppercase disabled:opacity-40'
                 type='number'
                 placeholder='Añade tu presupuesto'
                 name='budget'
@@ -26,6 +29,7 @@ const handleChange=(e:ChangeEvent<HTMLInputElement>)=>{
         type='submit' 
         value="Añadir"
         className="bg-blue-600 hover:bg-blue-700 cursor-pointer w-full p-2 text-white font-black uppercase"
+        disabled={isValid}
         />
         
       </form>
