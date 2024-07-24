@@ -1,23 +1,33 @@
-import { useState,ChangeEvent, useMemo } from "react"
+import { useState,ChangeEvent, useMemo,FormEvent } from "react"
+import { useBudget } from "../hooks/useBudget";
 
 const BudgetForm = () => {
+const {dispatch} =useBudget();
 const [budget, setBudget]= useState(0);
+
 const handleChange=(e:ChangeEvent<HTMLInputElement>)=>{
+    console.log(e.target.valueAsNumber)
     setBudget(e.target.valueAsNumber)
 }
 
 const isValid = useMemo(()=>{
     return isNaN(budget) || budget <=0;
-},[budget])
+},[budget]);
+
+const handleSubmit=(e:FormEvent<HTMLFormElement>)=>{
+    e.preventDefault();
+    dispatch({type:'add-budget',payload:{budget}})
+}
+
   return (
-    <form className="space-y-5">
+    <form className="space-y-5" onSubmit={handleSubmit}>
         <div className=" flex flex-col space-y-5">
             <label htmlFor="budget" className="text-4xl text-blue-600 font-bold text-center">
                 Definir Presupuesto
             </label>
             <input
                 id="budget"
-                className='w-full bg-white border border-gray-200 p-2 text-white font-black uppercase disabled:opacity-40'
+                className='w-full bg-white border border-gray-200 p-2 text-blue-200 font-black uppercase disabled:opacity-40'
                 type='number'
                 placeholder='Añade tu presupuesto'
                 name='budget'
