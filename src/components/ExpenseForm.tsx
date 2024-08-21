@@ -6,11 +6,14 @@ import DatePicker from 'react-date-picker';
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import { useBudget } from '../hooks/useBudget';
+import SweetAlert from "./SweetAlert"
 
 
 
 const ExpenseForm = () => {
-  const { dispatch,state }=useBudget()
+  const { dispatch,state,remainingBudget }=useBudget()
+  const [viewAlert,setViewAlert]=useState(false)
+  const [previousAmount,setPreviousAmount]=useState(0)
   const[error, setError]=useState('')
   const [expense, setExpense]=useState<DraftExpense>({
     amount:0,
@@ -23,6 +26,7 @@ useEffect(()=>{
   if(state.editingId){
     const editingExpense= state.expenses.filter( currentExpense => currentExpense.id === state.editingId)[0]
     setExpense(editingExpense)
+    setPreviousAmount(editingExpense.amount)
   }
 },[state.editingId])
 
@@ -40,10 +44,17 @@ useEffect(()=>{
 
   const handleSubmit =(e:FormEvent<HTMLFormElement>)=>{
       e.preventDefault()
+      
       if(Object.values(expense).includes('')){
         setError('Todos los campos son obligatorios');
         return
       }
+
+      if((expense.amount -previousAmount)> remainingBudget){
+        setViewAlert(true);        
+        return
+      }
+
       if(state.editingId){
         dispatch({type:'update-expense', payload:{ expense: { id:state.editingId, ...expense}}})
       }else{
@@ -55,6 +66,8 @@ useEffect(()=>{
         expenseName:'',
         category:'',
         date:new Date()})
+      setPreviousAmount(0)
+      setViewAlert(false);   
   }
 
   return (
@@ -129,6 +142,12 @@ useEffect(()=>{
         className="bg-blue-600 cursor-pointer w-full p-2 text-white uppercase font-bold rounded-lg"
         value={state.editingId ?'Editar Gasto':'Registrar Gasto'}
        />
+        {viewAlert &&(
+          <SweetAlert 
+            title={'Sobregiro del presupuesto'}
+            text={''}
+          />)
+        }
     </form>
   )
 }
