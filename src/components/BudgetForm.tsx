@@ -5,8 +5,7 @@ const BudgetForm = () => {
 const {dispatch} =useBudget();
 const [budget, setBudget]= useState(0);
 
-const handleChange=(e:ChangeEvent<HTMLInputElement>)=>{
-    console.log(e.target.valueAsNumber)
+const handleChange=(e:ChangeEvent<HTMLInputElement>)=>{    
     setBudget(e.target.valueAsNumber)
 }
 
